@@ -1,4 +1,4 @@
 pool:
   name: snowflake
 steps:
-- pwsh: echo "Hello world"
+- powershell: echo "Hello world"
