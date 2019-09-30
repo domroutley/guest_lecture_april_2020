@@ -1,0 +1,4 @@
+pool:
+  name: snowflake
+steps:
+- pwsh: echo "Hello world"
