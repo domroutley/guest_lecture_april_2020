@@ -6,14 +6,14 @@ resource "azurerm_virtual_network" "agent" {
 }
 
 resource "azurerm_network_interface" "agent" {
-  resource_group_name = "${azurerm_resource_group.agent.name}"
   name                = "${var.prefix}-network_interface"
+  resource_group_name = "${azurerm_resource_group.agent.name}"
   location            = "${var.location}"
 }
 
 resource "azurerm_public_ip" "agent" {
-  resource_group_name = "${azurerm_resource_group.agent.name}"
   name                = "${var.prefix}-public_ip"
+  resource_group_name = "${azurerm_resource_group.agent.name}"
   location            = "${var.location}"
   allocation_method   = "Dynamic"
 }
