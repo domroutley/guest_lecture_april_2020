@@ -1,4 +1,5 @@
 pool:
   name: snowflake
 steps:
+- powershell: terraform init
 - powershell: terraform plan
