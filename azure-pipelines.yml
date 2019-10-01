@@ -1,4 +1,4 @@
 pool:
   name: snowflake
 steps:
-- powershell: echo "Hello world"
+- powershell: terraform plan
