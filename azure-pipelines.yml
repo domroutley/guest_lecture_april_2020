@@ -2,4 +2,4 @@ pool:
   name: snowflake
 steps:
 - powershell: terraform init
-- powershell: terraform plan
+- powershell: terraform plan -var 'os_user=$(os_user)' -var 'os_pass=$(os_pass)'
