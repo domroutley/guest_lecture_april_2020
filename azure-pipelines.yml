@@ -2,4 +2,7 @@ pool:
   name: snowflake
 steps:
 - powershell: terraform init
-- powershell: terraform plan -var 'os_user=$(os_user)' -var 'os_pass=$(os_pass)'
+- powershell: terraform plan
+  env:
+    TF_VAR_os_user: $(os_user)
+    TF_VAR_os_pass: $(os_pass)
