@@ -1,5 +1,5 @@
 variable "prefix" {
-  default = "ADO Build Agent-${var.location}"
+  default = "ADO_Build_Agent"
 }
 
 variable "location" {
