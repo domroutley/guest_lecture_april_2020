@@ -7,15 +7,3 @@ steps:
 
 - script: terraform validate
   displayName: Validate Terraform
-
-- script: |
-    az login
-    terraform plan
-  displayName: Run Terraform plan
-  env:
-    TF_VAR_os_user: $(os_user)
-    TF_VAR_os_pass: $(os_pass)
-    TF_VAR_client_secret: $(IAM_user_secret)
-    TF_VAR_client_id: $(IAM_user_id)
-    TF_VAR_tenant_id: $(sandbox_tenant_id)
-    TF_VAR_subscription_id: $(sandbox_sub_id)
