@@ -1,5 +1,6 @@
 pool:
-  name: snowflake
+  vmImage: 'ubuntu-latest'
+
 steps:
 - script: terraform init
   displayName: Initilise Terraform
