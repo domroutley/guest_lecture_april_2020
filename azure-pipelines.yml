@@ -7,7 +7,9 @@ steps:
 - script: terraform validate
   displayName: Validate Terraform
 
-- script: terraform plan
+- script: |
+    az login
+    terraform plan
   displayName: Run Terraform plan
   env:
     TF_VAR_os_user: $(os_user)
