@@ -23,7 +23,7 @@ resource "azurerm_virtual_machine" "agent" {
     managed_disk_type = "Standard_LRS"
   }
   os_profile {
-    computer_name  = "${var.prefix}-build_agent"
+    computer_name  = "Agent"
     admin_username = "${var.os_user}"
     admin_password = "${var.os_pass}"
   }
