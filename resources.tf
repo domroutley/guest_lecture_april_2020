@@ -9,6 +9,9 @@ resource "azurerm_virtual_machine" "agent" {
   location              = "${var.location}"
   network_interface_ids = ["${azurerm_network_interface.agent.id}"]
   vm_size               = "${var.vm_size}"
+  os_profile_windows_config {
+    timezone = "UTC"
+  }
 
   storage_image_reference {
     publisher = "MicrosoftWindowsServer"
