@@ -12,6 +12,7 @@ variable "vm_size" {
 
 # Service Principal credentials
 variable "subscription_id" {}
+
 variable "tenant_id" {}
 
 variable "client_id" {}
@@ -20,4 +21,5 @@ variable "client_secret" {}
 # Declared but filled from a secret file (secrets.auto.tfvars)
 # so as not to expose secrets to source control
 variable "os_user" {}
+
 variable "os_pass" {}

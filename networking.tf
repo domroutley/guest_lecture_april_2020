@@ -9,6 +9,7 @@ resource "azurerm_network_interface" "agent" {
   name                = "${var.prefix}-network_interface"
   resource_group_name = "${azurerm_resource_group.agent.name}"
   location            = "${var.location}"
+
   ip_configuration {
     name                          = "${var.prefix}-address"
     public_ip_address_id          = "${azurerm_public_ip.agent.id}"
