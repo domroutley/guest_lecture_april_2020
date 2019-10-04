@@ -1,3 +1,5 @@
 .terraform/*
 *.tfstate*
-secrets.auto.tfvars
+*.tfvars
+*.key
+*.pub
