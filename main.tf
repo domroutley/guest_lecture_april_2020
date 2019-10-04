@@ -34,5 +34,6 @@ resource "azurerm_virtual_machine" "agent" {
   os_profile {
     computer_name  = "HelloWorld"
     admin_username = "${var.os_user}"
+    custom_data    = file("setup.sh")
   }
 }
