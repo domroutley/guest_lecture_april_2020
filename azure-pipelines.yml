@@ -2,8 +2,5 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: terraform init
-  displayName: Initilise Terraform
-
 - script: terraform validate
   displayName: Validate Terraform
