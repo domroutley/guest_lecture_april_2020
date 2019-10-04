@@ -9,11 +9,12 @@ resource "azurerm_virtual_machine" "agent" {
   location              = "${var.location}"
   network_interface_ids = ["${azurerm_network_interface.agent.id}"]
   vm_size               = "${var.vm_size}"
+
   os_profile_linux_config {
     disable_password_authentication = true
     ssh_keys {
       key_data = file("server.pub")
-      path = "/home/${var.os_user}/.ssh/authorized_keys"
+      path     = "/home/${var.os_user}/.ssh/authorized_keys"
     }
   }
 
