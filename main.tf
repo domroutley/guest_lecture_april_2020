@@ -9,14 +9,18 @@ resource "azurerm_virtual_machine" "agent" {
   location              = "${var.location}"
   network_interface_ids = ["${azurerm_network_interface.agent.id}"]
   vm_size               = "${var.vm_size}"
-  os_profile_windows_config {
-    timezone = "UTC"
+  os_profile_linux_config {
+    disable_password_authentication = true
+    ssh_keys {
+      key_data = file("server.pub")
+      path = "/home/${var.os_user}/.ssh/authorized_keys"
+    }
   }
 
   storage_image_reference {
-    publisher = "MicrosoftWindowsServer"
-    offer     = "WindowsServer"
-    sku       = "2019-Datacenter"
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
     version   = "latest"
   }
 
@@ -28,8 +32,7 @@ resource "azurerm_virtual_machine" "agent" {
   }
 
   os_profile {
-    computer_name  = "Agent"
+    computer_name  = "HelloWorld"
     admin_username = "${var.os_user}"
-    admin_password = "${var.os_pass}"
   }
 }

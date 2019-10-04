@@ -7,7 +7,7 @@ variable "location" {
 }
 
 variable "vm_size" {
-  default = "Standard_B2ms"
+  default = "Standard_B1ms"
 }
 
 # Service Principal credentials
