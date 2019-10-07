@@ -10,4 +10,4 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # The variables below are filled in using Terraform interpolation
 echo "Hello world" > index.html
-nohup busybox httpd -f -p "8080" &
+nohup busybox httpd -f -p "${port_number}" &

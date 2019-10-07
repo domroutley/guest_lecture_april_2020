@@ -10,6 +10,11 @@ variable "vm_size" {
   default = "Standard_B1ms"
 }
 
+variable "port_number" {
+  description = "Port number to be used for the application."
+  default     = "8080"
+}
+
 # Service Principal credentials
 variable "subscription_id" {}
 
