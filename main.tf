@@ -1,13 +1,13 @@
-resource "azurerm_resource_group" "agent" {
+resource "azurerm_resource_group" "test" {
   name     = "${var.prefix}"
   location = "${var.location}"
 }
 
-resource "azurerm_virtual_machine" "agent" {
+resource "azurerm_virtual_machine" "test" {
   name                  = "${var.prefix}-virtual_machine"
-  resource_group_name   = "${azurerm_resource_group.agent.name}"
+  resource_group_name   = "${azurerm_resource_group.test.name}"
   location              = "${var.location}"
-  network_interface_ids = ["${azurerm_network_interface.agent.id}"]
+  network_interface_ids = ["${azurerm_network_interface.test.id}"]
   vm_size               = "${var.vm_size}"
 
   os_profile_linux_config {

@@ -1,5 +1,5 @@
 variable "prefix" {
-  default = "ADO_Build_Agent"
+  default = "Testing-VM"
 }
 
 variable "location" {
