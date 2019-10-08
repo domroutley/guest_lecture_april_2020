@@ -26,5 +26,3 @@ variable "client_secret" {}
 # Declared but filled from a secret file (secrets.auto.tfvars)
 # so as not to expose secrets to source control
 variable "os_user" {}
-
-variable "os_pass" {}
