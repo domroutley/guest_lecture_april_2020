@@ -15,6 +15,10 @@ variable "port_number" {
   default     = "8080"
 }
 
+variable "computer_name" {
+  default = "HelloWorld"
+}
+
 # Service Principal credentials
 variable "subscription_id" {}
 
