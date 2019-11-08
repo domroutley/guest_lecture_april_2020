@@ -1,13 +1,5 @@
 #!/bin/bash
-# This script is meant to be run in the User Data of an EC2 Instance while it's booting. It starts a simple
-# "Hello, World" web server.
 
-set -e
-
-# Send the log output from this script to user-data.log, syslog, and the console
-# From: https://alestic.com/2010/12/ec2-user-data-output/
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-
-# The variables below are filled in using Terraform interpolation
-echo "Hello world" > index.html
-nohup busybox httpd -f -p "${port_number}" &
+wget 'https://gist.githubusercontent.com/domroutley/5e26e2d13000f4003ba6fddb13e23d0c/raw/e8b5c142136745c180fe9b800f14c61a2bc3e634/server.py'
+mv server.py $HOME/server.py
+python3 $HOME/server.py 8080 # TODO, turn this into a service
