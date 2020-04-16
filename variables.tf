@@ -20,13 +20,19 @@ variable "computer_name" {
 }
 
 # Service Principal credentials
-variable "subscription_id" {}
+variable "subscription_id" {
+}
 
-variable "tenant_id" {}
+variable "tenant_id" {
+}
 
-variable "client_id" {}
-variable "client_secret" {}
+variable "client_id" {
+}
+
+variable "client_secret" {
+}
 
 # Declared but filled from a secret file (secrets.auto.tfvars)
 # so as not to expose secrets to source control
-variable "os_user" {}
+variable "os_user" {
+}
