@@ -35,6 +35,5 @@ resource "azurerm_virtual_machine" "test" {
   os_profile {
     computer_name  = var.computer_name
     admin_username = var.os_user
-    custom_data    = file("setup.sh")
   }
 }
