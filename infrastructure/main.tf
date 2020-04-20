@@ -14,7 +14,7 @@ resource "azurerm_virtual_machine" "test" {
     disable_password_authentication = true
     ssh_keys {
       key_data = file("server.pub")
-      path = "/home/${var.os_user}/.ssh/authorized_keys"
+      path     = "/home/${var.os_user}/.ssh/authorized_keys"
     }
   }
 
@@ -33,7 +33,7 @@ resource "azurerm_virtual_machine" "test" {
   }
 
   os_profile {
-    computer_name  = var.computer_name
+    computer_name  = "${var.prefix}-server"
     admin_username = var.os_user
   }
 }

@@ -1,5 +1,5 @@
 infrastructure/.terraform/*
 *.tfstate*
-*.tfvars
+*.auto.tfvars
 *.key
 *.pub

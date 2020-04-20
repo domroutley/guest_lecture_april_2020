@@ -1,5 +1,5 @@
+# Defined by env vars
 variable "prefix" {
-  default = "Testing-VM"
 }
 
 variable "location" {
@@ -11,12 +11,8 @@ variable "vm_size" {
 }
 
 variable "port_number" {
-  description = "Port number to be used for the application."
+  description = "Port to be opened."
   default     = "8080"
-}
-
-variable "computer_name" {
-  default = "HelloWorld"
 }
 
 # Service Principal credentials
