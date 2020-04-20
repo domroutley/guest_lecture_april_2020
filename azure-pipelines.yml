@@ -2,8 +2,18 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: terraform init
+- bash: |
+    touch server.pub
+    echo "subscription_id = \"fakesubid\"
+    tenant_id = \"faketenantid\"
+    client_id = \"fakeclientid\"
+    client_secret = \"fakeclientsecret\"
+    os_user = \"fakeosuser\"
+    " >> secrets.auto.tfvars
+  displayName: Create dummy required files
+
+- bash: terraform init
   displayName: Initilise Terraform
 
-- script: terraform validate
+- bash: terraform validate
   displayName: Validate Terraform
