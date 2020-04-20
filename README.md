@@ -1,8 +1,10 @@
-# Terraform to deploy a test VM
+# Demo code for use in the Guest Lecture from April 2020
 
+## Infrastructure (Terraform)
+Creates a Ubuntu server in Azure with associated networking.
 
-## Naming standards
-- Resource groups
- - Their own name
-- Everything else
- - {ResourceGroupName}-resource_identifier (minus the azurerm_)
+## Configuration (Ansible)
+Configures the server to run the application.
+
+## Pipelines (Azure DevOps)
+Runs the CI and CD services to automatically deploy the infrastructure and application.
