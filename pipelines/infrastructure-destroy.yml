@@ -1,0 +1,25 @@
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+parameters:
+- name: stage
+  displayName:
+  type: string
+  values:
+  - test
+  - dev
+  - prod
+
+variables:
+  - group: april_2020
+  # Not used, but required to be set
+  - name: tf_var_os_user
+    value: username
+
+steps:
+  - template: templates/init.yml
+
+  - bash: terraform destroy -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
+    displayName: Destroy Terraform ${{ parameters.stage }}
