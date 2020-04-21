@@ -1,0 +1,12 @@
+parameters:
+- name: stage
+  type: string
+  default: test
+
+steps:
+  - template: plan.yml
+    parameters:
+      stage: ${{ parameters.stage }}
+
+  - bash: terraform apply -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
+    displayName: Apply Terraform ${{ parameters.stage }}

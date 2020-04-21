@@ -1,0 +1,8 @@
+parameters:
+- name: stage
+  type: string
+  default: test
+
+steps:
+  - bash: terraform init -backend-config=${{ parameters.stage }}/backend.tfvars
+    displayName: Initilise Terraform ${{ parameters.stage }}

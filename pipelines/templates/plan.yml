@@ -1,0 +1,12 @@
+parameters:
+- name: stage
+  type: string
+  default: test
+
+steps:
+  - template: init.yml
+    parameters:
+      stage: ${{ parameters.stage }}
+
+  - bash: terraform plan -var-file=${{ parameters.stage }}/env.tfvars
+    displayName: Plan Terraform ${{ parameters.stage }}
