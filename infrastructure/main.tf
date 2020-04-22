@@ -13,7 +13,7 @@ resource "azurerm_virtual_machine" "test" {
   os_profile_linux_config {
     disable_password_authentication = true
     ssh_keys {
-      key_data = file("server.pub")
+      key_data = file("keys/key.pub")
       path     = "/home/${var.os_user}/.ssh/authorized_keys"
     }
   }
