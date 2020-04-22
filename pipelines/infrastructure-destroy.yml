@@ -24,6 +24,9 @@ jobs:
         deploy:
           steps:
 
+            - checkout: self
+              clean: true
+
             - template: templates/init.yml
 
             - task: Bash@3

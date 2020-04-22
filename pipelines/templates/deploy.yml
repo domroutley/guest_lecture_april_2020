@@ -49,6 +49,9 @@ stages:
             deploy:
               steps:
 
+                - checkout: self
+                  clean: true
+
                 - template: init.yml
                   parameters:
                     env: ${{ parameters.env }}
