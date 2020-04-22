@@ -4,7 +4,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 parameters:
-- name: stage
+- name: env
   displayName:
   type: string
   values:
@@ -15,28 +15,36 @@ parameters:
 variables:
   - group: service_principals
 
-steps:
-  - template: templates/init.yml
+jobs:
+  - deployment: destroy
+    displayName: Destroy environment
+    environment: ${{ parameters.env }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-  - task: Bash@3
-    displayName: Create dummy ssh key file
-    inputs:
-      workingDirectory: infrastructure
-      targetType: 'inline'
-      script: |
-        rm -rf keys
-        mkdir keys
-        touch keys/key.pub
-        ls keys
+            - template: templates/init.yml
 
-  - task: Bash@3
-    inputs:
-      workingDirectory: infrastructure
-      targetType: 'inline'
-      script: terraform destroy -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
-    displayName: Destroy Terraform ${{ parameters.stage }}
-    env:
-      ARM_CLIENT_ID: $(arm_client_id)
-      ARM_CLIENT_SECRET: $(arm_client_secret)
-      ARM_TENANT_ID: $(arm_tenant_id)
-      ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+            - task: Bash@3
+              displayName: Create dummy ssh key file
+              inputs:
+                workingDirectory: infrastructure
+                targetType: 'inline'
+                script: |
+                  rm -rf keys
+                  mkdir keys
+                  touch keys/key.pub
+                  ls keys
+
+            - task: Bash@3
+              inputs:
+                workingDirectory: infrastructure
+                targetType: 'inline'
+                script: terraform destroy -var-file=${{ parameters.env }}/env.tfvars -auto-approve
+              displayName: Destroy Terraform ${{ parameters.env }}
+              env:
+                ARM_CLIENT_ID: $(arm_client_id)
+                ARM_CLIENT_SECRET: $(arm_client_secret)
+                ARM_TENANT_ID: $(arm_tenant_id)
+                ARM_SUBSCRIPTION_ID: $(arm_subscription_id)

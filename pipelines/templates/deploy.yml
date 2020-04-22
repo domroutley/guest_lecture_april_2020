@@ -1,5 +1,5 @@
 parameters:
-- name: stage
+- name: env
   type: string
   default: test
 
@@ -8,12 +8,12 @@ stages:
     displayName: Plan environment
     jobs:
       - job: plan
-        displayName: Plan environment
+        displayName: Plan infrastructure
         steps:
 
           - template: init.yml
             parameters:
-              stage: ${{ parameters.stage }}
+              env: ${{ parameters.env }}
 
           - task: Bash@3
             displayName: Create dummy ssh key file
@@ -30,8 +30,8 @@ stages:
             inputs:
               workingDirectory: infrastructure
               targetType: 'inline'
-              script: terraform plan -var-file=${{ parameters.stage }}/env.tfvars
-            displayName: Plan Terraform ${{ parameters.stage }}
+              script: terraform plan -var-file=${{ parameters.env }}/env.tfvars
+            displayName: Plan Terraform ${{ parameters.env }}
             env:
               ARM_CLIENT_ID: $(arm_client_id)
               ARM_CLIENT_SECRET: $(arm_client_secret)
@@ -41,33 +41,37 @@ stages:
   - stage: apply
     displayName: Deploy environment
     jobs:
-      - job: apply
-        displayName: Deploy environment
-        steps:
+      - deployment: apply
+        displayName: Deploy to environment
+        environment: ${{ parameters.env }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
 
-          - template: init.yml
-            parameters:
-              stage: ${{ parameters.stage }}
+                - template: init.yml
+                  parameters:
+                    env: ${{ parameters.env }}
 
-          - task: Bash@3
-            displayName: Create ssh key file
-            inputs:
-              workingDirectory: infrastructure
-              targetType: 'inline'
-              script: |
-                rm -rf keys
-                mkdir keys
-                ssh-keygen -t rsa -b 4098 -P "" -f keys/key
-                ls keys
+                - task: Bash@3
+                  displayName: Create ssh key file
+                  inputs:
+                    workingDirectory: infrastructure
+                    targetType: 'inline'
+                    script: |
+                      rm -rf keys
+                      mkdir keys
+                      ssh-keygen -t rsa -b 4098 -P "" -f keys/key
+                      ls keys
 
-          - task: Bash@3
-            inputs:
-              workingDirectory: infrastructure
-              targetType: 'inline'
-              script: terraform apply -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
-            displayName: Apply Terraform ${{ parameters.stage }}
-            env:
-              ARM_CLIENT_ID: $(arm_client_id)
-              ARM_CLIENT_SECRET: $(arm_client_secret)
-              ARM_TENANT_ID: $(arm_tenant_id)
-              ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+                - task: Bash@3
+                  inputs:
+                    workingDirectory: infrastructure
+                    targetType: 'inline'
+                    script: terraform apply -var-file=${{ parameters.env }}/env.tfvars -auto-approve
+                  displayName: Apply Terraform ${{ parameters.env }}
+                  env:
+                    ARM_CLIENT_ID: $(arm_client_id)
+                    ARM_CLIENT_SECRET: $(arm_client_secret)
+                    ARM_TENANT_ID: $(arm_tenant_id)
+                    ARM_SUBSCRIPTION_ID: $(arm_subscription_id)

@@ -13,10 +13,10 @@ pool:
 
 variables:
   - group: service_principals
-  - name: stage
+  - name: env
     value: prod
 
 stages:
   - template: templates/deploy.yml
     parameters:
-      stage: $(stage)
+      env: $(env)

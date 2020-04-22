@@ -13,11 +13,11 @@ strategy:
   maxParallel: 3
   matrix:
     test:
-      stage: test
+      env: test
     dev:
-      stage: dev
+      env: dev
     prod:
-      stage: prod
+      env: prod
 
 steps:
   - task: Bash@3
@@ -33,7 +33,7 @@ steps:
 
   - template: $(System.DefaultWorkingDirectory)/pipelines/templates/init.yml
     parameters:
-      stage: $(stage)
+      stage: $(env)
 
   - task: Bash@3
     inputs:
