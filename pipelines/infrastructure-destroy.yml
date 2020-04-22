@@ -23,3 +23,4 @@ steps:
 
   - bash: terraform destroy -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
     displayName: Destroy Terraform ${{ parameters.stage }}
+    workingDirectory: infrastructure

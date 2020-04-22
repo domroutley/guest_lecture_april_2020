@@ -10,3 +10,4 @@ steps:
 
   - bash: terraform plan -var-file=${{ parameters.stage }}/env.tfvars
     displayName: Plan Terraform ${{ parameters.stage }}
+    workingDirectory: infrastructure

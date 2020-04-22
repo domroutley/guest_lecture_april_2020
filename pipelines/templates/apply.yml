@@ -10,3 +10,4 @@ steps:
 
   - bash: terraform apply -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
     displayName: Apply Terraform ${{ parameters.stage }}
+    workingDirectory: infrastructure
