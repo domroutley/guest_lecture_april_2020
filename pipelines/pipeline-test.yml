@@ -23,7 +23,7 @@ stages:
         steps:
           - bash: |
               mkdir keys
-              touch keys/server.pub
+              touch keys/key.pub
               ls keys
             displayName: Create dummy ssh key file
             workingDirectory: infrastructure
