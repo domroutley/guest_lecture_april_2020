@@ -22,10 +22,10 @@ strategy:
 steps:
 - task: Bash@3
   inputs:
+    workingDirectory: infrastructure
     targetType: 'inline'
     script: terraform init -backend-config=$(stage)/backend.tfvars
   displayName: Initilise Terraform
-  workingDirectory: infrastructure
   env:
     ARM_CLIENT_ID: $(arm_client_id)
     ARM_CLIENT_SECRET: $(arm_client_secret)
@@ -34,7 +34,7 @@ steps:
 
 - task: Bash@3
   inputs:
+    workingDirectory: infrastructure
     targetType: 'inline'
     script: terraform validate
   displayName: Validate Terraform
-  workingDirectory: infrastructure

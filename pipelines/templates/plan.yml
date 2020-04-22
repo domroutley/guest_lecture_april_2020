@@ -10,8 +10,8 @@ steps:
 
   - task: Bash@3
     displayName: Create dummy ssh key file
-    workingDirectory: infrastructure
     inputs:
+      workingDirectory: infrastructure
       targetType: 'inline'
       script: |
         rm -rf keys
@@ -21,10 +21,10 @@ steps:
 
   - task: Bash@3
     inputs:
+      workingDirectory: infrastructure
       targetType: 'inline'
       script: terraform plan -var-file=${{ parameters.stage }}/env.tfvars
     displayName: Plan Terraform ${{ parameters.stage }}
-    workingDirectory: infrastructure
     env:
       ARM_CLIENT_ID: $(arm_client_id)
       ARM_CLIENT_SECRET: $(arm_client_secret)
