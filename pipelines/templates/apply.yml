@@ -8,7 +8,21 @@ steps:
     parameters:
       stage: ${{ parameters.stage }}
 
-  - bash: terraform apply -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
+  - task: Bash@3
+    displayName: Create ssh key file
+    workingDirectory: infrastructure
+    inputs:
+      targetType: 'inline'
+      script: |
+        rm -rf keys
+        mkdir keys
+        ssh-keygen -t rsa -b 4098 -P "" -f keys/key
+        ls keys
+
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: terraform apply -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
     displayName: Apply Terraform ${{ parameters.stage }}
     workingDirectory: infrastructure
     env:

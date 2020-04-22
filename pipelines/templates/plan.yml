@@ -8,7 +8,21 @@ steps:
     parameters:
       stage: ${{ parameters.stage }}
 
-  - bash: terraform plan -var-file=${{ parameters.stage }}/env.tfvars
+  - task: Bash@3
+    displayName: Create dummy ssh key file
+    workingDirectory: infrastructure
+    inputs:
+      targetType: 'inline'
+      script: |
+        rm -rf keys
+        mkdir keys
+        touch keys/key.pub
+        ls keys
+
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: terraform plan -var-file=${{ parameters.stage }}/env.tfvars
     displayName: Plan Terraform ${{ parameters.stage }}
     workingDirectory: infrastructure
     env:

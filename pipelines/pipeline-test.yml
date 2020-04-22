@@ -21,13 +21,6 @@ stages:
     jobs:
       - job: plan
         steps:
-          - bash: |
-              mkdir keys
-              touch keys/key.pub
-              ls keys
-            displayName: Create dummy ssh key file
-            workingDirectory: infrastructure
-
           - template: templates/plan.yml
             parameters:
               stage: $(stage)
@@ -36,13 +29,6 @@ stages:
     jobs:
       - job: apply
         steps:
-          - bash: |
-              mkdir keys
-              ssh-keygen -t rsa -b 4098 -P "" -f keys/key
-              ls keys
-            displayName: Create ssh key file
-            workingDirectory: infrastructure
-
           - template: templates/apply.yml
             parameters:
               stage: $(stage)

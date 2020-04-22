@@ -20,7 +20,10 @@ strategy:
       stage: prod
 
 steps:
-- bash: terraform init -backend-config=$(stage)/backend.tfvars
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: terraform init -backend-config=$(stage)/backend.tfvars
   displayName: Initilise Terraform
   workingDirectory: infrastructure
   env:
@@ -29,6 +32,9 @@ steps:
     ARM_TENANT_ID: $(arm_tenant_id)
     ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
-- bash: terraform validate
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: terraform validate
   displayName: Validate Terraform
   workingDirectory: infrastructure

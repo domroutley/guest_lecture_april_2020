@@ -18,7 +18,21 @@ variables:
 steps:
   - template: templates/init.yml
 
-  - bash: terraform destroy -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
+  - task: Bash@3
+    displayName: Create dummy ssh key file
+    workingDirectory: infrastructure
+    inputs:
+      targetType: 'inline'
+      script: |
+        rm -rf keys
+        mkdir keys
+        touch keys/key.pub
+        ls keys
+
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: terraform destroy -var-file=${{ parameters.stage }}/env.tfvars -auto-approve
     displayName: Destroy Terraform ${{ parameters.stage }}
     workingDirectory: infrastructure
     env:
