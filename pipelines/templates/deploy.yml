@@ -38,10 +38,10 @@ stages:
               ARM_TENANT_ID: $(arm_tenant_id)
               ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
-  - stage: apply
-    displayName: Deploy environment
+  - stage: deploy
+    displayName: Deploy to environment
     jobs:
-      - deployment: apply
+      - deployment: deploy
         displayName: Deploy to environment
         environment: ${{ parameters.env }}
         strategy:
