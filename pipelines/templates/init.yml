@@ -7,3 +7,8 @@ steps:
   - bash: terraform init -backend-config=${{ parameters.stage }}/backend.tfvars
     displayName: Initilise Terraform ${{ parameters.stage }}
     workingDirectory: infrastructure
+    env:
+      ARM_CLIENT_ID: $(arm_client_id)
+      ARM_CLIENT_SECRET: $(arm_client_secret)
+      ARM_TENANT_ID: $(arm_tenant_id)
+      ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
