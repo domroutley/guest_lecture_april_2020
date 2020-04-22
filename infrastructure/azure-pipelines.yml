@@ -3,22 +3,31 @@ trigger:
     include:
     - infrastructure/
 
+variables:
+  - group: service_principals
+
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- bash: |
-    touch server.pub
-    echo "subscription_id = \"fakesubid\"
-    tenant_id = \"faketenantid\"
-    client_id = \"fakeclientid\"
-    client_secret = \"fakeclientsecret\"
-    os_user = \"fakeosuser\"
-    " >> secrets.auto.tfvars
-  displayName: Create dummy required files
+strategy:
+  maxParallel: 3
+  matrix:
+    test:
+      stage: test
+    dev:
+      stage: dev
+    prod:
+      stage: prod
 
-- bash: terraform init
+steps:
+- bash: touch server.pub
+  displayName: Create dummy required file
+  workingDirectory: infrastructure
+
+- bash: terraform init -backend-config=$(stage)/backend.tfvars
   displayName: Initilise Terraform
+  workingDirectory: infrastructure
 
 - bash: terraform validate
   displayName: Validate Terraform
+  workingDirectory: infrastructure
