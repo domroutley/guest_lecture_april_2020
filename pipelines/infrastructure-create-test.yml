@@ -12,7 +12,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: april_2020
+  - group: service_principals
   - name: tf_var_os_user
     value: demoUser
   - name: stage

@@ -13,7 +13,7 @@ parameters:
   - prod
 
 variables:
-  - group: april_2020
+  - group: service_principals
   # Not used, but required to be set
   - name: tf_var_os_user
     value: username
