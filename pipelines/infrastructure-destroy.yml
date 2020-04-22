@@ -28,6 +28,8 @@ jobs:
               clean: true
 
             - template: templates/init.yml
+              parameters:
+                env: ${{ parameters.env }}
 
             - task: Bash@3
               displayName: Create dummy ssh key file
