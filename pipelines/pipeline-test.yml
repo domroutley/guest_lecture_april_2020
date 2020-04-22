@@ -16,7 +16,31 @@ variables:
   - name: stage
     value: test
 
-steps:
-  - template: templates/apply.yml
-    parameters:
-      stage: $(stage)
+stages:
+  - stage: plan
+    jobs:
+      - job: plan
+        steps:
+          - bash: |
+              mkdir keys
+              touch keys/server.pub
+              ls keys
+            displayName: Create dummy ssh key file
+            workingDirectory: infrastructure
+
+          - template: templates/plan.yml
+            parameters:
+              stage: $(stage)
+
+  - stage: apply
+    jobs:
+      - job: apply
+        steps:
+          - bash: |
+              mkdir keys
+              ssh-keygen -t rsa -b 4098 -P "" -f keys/key
+              ls keys
+
+          - template: templates/apply.yml
+            parameters:
+              stage: $(stage)
