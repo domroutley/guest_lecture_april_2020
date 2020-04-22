@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "test" {
-  name     = var.prefix
+  name     = "${var.prefix}-env-rg"
   location = var.location
 }
 
