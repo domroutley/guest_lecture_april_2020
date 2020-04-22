@@ -3,6 +3,7 @@ variable "prefix" {
 }
 
 variable "os_user" {
+  default = "demoUser"
 }
 
 variable "location" {

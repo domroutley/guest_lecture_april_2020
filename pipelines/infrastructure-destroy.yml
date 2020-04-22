@@ -14,9 +14,6 @@ parameters:
 
 variables:
   - group: service_principals
-  # Not used, but required to be set
-  - name: tf_var_os_user
-    value: username
 
 steps:
   - template: templates/init.yml

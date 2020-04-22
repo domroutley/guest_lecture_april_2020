@@ -13,8 +13,6 @@ pool:
 
 variables:
   - group: service_principals
-  - name: tf_var_os_user
-    value: demoUser
   - name: stage
     value: dev
 
