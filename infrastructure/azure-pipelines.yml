@@ -20,10 +20,6 @@ strategy:
       stage: prod
 
 steps:
-- bash: touch server.pub
-  displayName: Create dummy required file
-  workingDirectory: infrastructure
-
 - bash: terraform init -backend-config=$(stage)/backend.tfvars
   displayName: Initilise Terraform
   workingDirectory: infrastructure
