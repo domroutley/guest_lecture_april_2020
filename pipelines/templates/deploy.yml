@@ -5,10 +5,10 @@ parameters:
 
 stages:
   - stage: plan
-    displayName: Plan ${{ parameters.stage }} environment
+    displayName: Plan environment
     jobs:
       - job: plan
-        displayName: Plan ${{ parameters.stage }} environment
+        displayName: Plan environment
         steps:
 
           - template: init.yml
@@ -39,10 +39,10 @@ stages:
               ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
   - stage: apply
-    displayName: Deploy ${{ parameters.stage }} environment
+    displayName: Deploy environment
     jobs:
       - job: apply
-        displayName: Deploy ${{ parameters.stage }} environment
+        displayName: Deploy environment
         steps:
 
           - template: init.yml
