@@ -17,18 +17,6 @@ variables:
     value: test
 
 stages:
-  - stage: plan
-    jobs:
-      - job: plan
-        steps:
-          - template: templates/plan.yml
-            parameters:
-              stage: $(stage)
-
-  - stage: apply
-    jobs:
-      - job: apply
-        steps:
-          - template: templates/apply.yml
-            parameters:
-              stage: $(stage)
+  - template: templates/deploy.yml
+    parameters:
+      stage: $(stage)

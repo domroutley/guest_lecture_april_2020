@@ -16,7 +16,7 @@ variables:
   - name: stage
     value: dev
 
-steps:
-  - template: templates/apply.yml
+stages:
+  - template: templates/deploy.yml
     parameters:
       stage: $(stage)
