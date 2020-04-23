@@ -12,5 +12,5 @@ steps:
       script: |
         rm -rf keys
         mkdir keys
-        ssh-keygen -t rsa -b 4098 -P "" -f keys/key -C ${{ comment }}
+        ssh-keygen -t rsa -b 4098 -P "" -f keys/key -C ${{ parameters.comment }}
         ls keys
