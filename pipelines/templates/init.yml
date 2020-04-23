@@ -9,7 +9,7 @@ steps:
       workingDirectory: infrastructure
       targetType: 'inline'
       script: terraform init -backend-config=${{ parameters.env }}/backend.tfvars
-    displayName: Initilise Terraform ${{ parameters.env }}
+    displayName: Initilise Terraform
     env:
       ARM_CLIENT_ID: $(arm_client_id)
       ARM_CLIENT_SECRET: $(arm_client_secret)
