@@ -99,14 +99,19 @@ stages:
                       ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
                   - task: Bash@3
-                    name: set_var_step
-                    displayName: Extract IP from Terraform output and set variable
+                    displayName: Extract IP from Terraform output
                     inputs:
                       workingDirectory: infrastructure
                       targetType: 'inline'
-                      script: |
-                        terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
-                        echo "##vso[task.setvariable variable=target_ip;isOutput=true]$(python3 scripts/json_extract.py $(System.DefaultWorkingDirectory)/output.json)"
+                      script: terraform output -json >> output.json
+
+                  - task: Bash@3
+                    name: set_var_step
+                    displayName: Set IP variable
+                    inputs:
+                      workingDirectory: pipelines
+                      targetType: 'inline'
+                      script: echo "##vso[task.setvariable variable=target_ip;isOutput=true]$(python3 scripts/json_extract.py $(System.DefaultWorkingDirectory)/infrastructure/output.json)"
 
         - job: provision
           displayName: Provision the server
