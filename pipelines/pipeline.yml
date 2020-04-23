@@ -38,7 +38,7 @@ stages:
               parameters:
                 env: ${{ parameters.env }}
 
-            - template: templates/dummy_ssh.yml
+            - template: templates/ssh-keygen.yml
 
             - task: Bash@3
               displayName: Plan Terraform
@@ -74,16 +74,9 @@ stages:
                     parameters:
                       env: ${{ parameters.env }}
 
-                  - task: Bash@3
-                    displayName: Create ssh key file
-                    inputs:
-                      workingDirectory: infrastructure
-                      targetType: 'inline'
-                      script: |
-                        rm -rf keys
-                        mkdir keys
-                        ssh-keygen -t rsa -b 4098 -P "" -f keys/key -C $(username)
-                        ls keys
+                  - template: templates/ssh-keygen.yml
+                    parameters:
+                      comment: $(username)
 
                   - task: Bash@3
                     displayName: Apply Terraform
