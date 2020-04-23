@@ -81,6 +81,7 @@ stages:
                         mkdir keys
                         ssh-keygen -t rsa -b 4098 -P "" -f keys/key
                         ls keys
+                        pwd
 
                   - task: Bash@3
                     displayName: Apply Terraform
