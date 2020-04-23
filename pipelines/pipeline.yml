@@ -72,7 +72,7 @@ stages:
                   - checkout: self
                     clean: true
 
-                  - template: init.yml
+                  - template: templates/init.yml
                     parameters:
                       env: ${{ parameters.env }}
 
