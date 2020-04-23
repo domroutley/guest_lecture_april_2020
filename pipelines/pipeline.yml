@@ -1,12 +1,34 @@
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: service_principals
+
 parameters:
-- name: env
-  type: string
-- name: plan
-  type: boolean
-- name: infrastructure
-  type: boolean
-- name: configuration
-  type: boolean
+  - name: env
+    displayName: Targeted environment
+    type: string
+    values:
+      - test
+      - dev
+      - prod
+
+  - name: plan
+    displayName: Run infrastructure plan?
+    type: boolean
+    default: true
+
+  - name: infrastructure
+    displayName: Run infrastructure deployment?
+    type: boolean
+    default: true
+
+  - name: configuration
+    displayName: Run configuration provision?
+    type: boolean
+    default: true
 
 stages:
   - ${{ if eq(parameters.plan, true) }}:
@@ -17,20 +39,11 @@ stages:
           displayName: Plan infrastructure
           steps:
 
-            - template: init.yml
+            - template: templates/init.yml
               parameters:
                 env: ${{ parameters.env }}
 
-            - task: Bash@3
-              displayName: Create dummy ssh key file
-              inputs:
-                workingDirectory: infrastructure
-                targetType: 'inline'
-                script: |
-                  rm -rf keys
-                  mkdir keys
-                  touch keys/key.pub
-                  ls keys
+            - template: templates/dummy_ssh.yml
 
             - task: Bash@3
               displayName: Plan Terraform
@@ -119,5 +132,4 @@ stages:
                   --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
                   --user ${{ parameters.env }}AdminUser \
                   --extra-vars target_server=$(target_ip) \
-                  --inventory
                   playbook.yml

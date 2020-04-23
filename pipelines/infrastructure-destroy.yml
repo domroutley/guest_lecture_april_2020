@@ -31,16 +31,7 @@ jobs:
               parameters:
                 env: ${{ parameters.env }}
 
-            - task: Bash@3
-              displayName: Create dummy ssh key file
-              inputs:
-                workingDirectory: infrastructure
-                targetType: 'inline'
-                script: |
-                  rm -rf keys
-                  mkdir keys
-                  touch keys/key.pub
-                  ls keys
+            - template: templates/dummy_ssh.yml
 
             - task: Bash@3
               inputs:
