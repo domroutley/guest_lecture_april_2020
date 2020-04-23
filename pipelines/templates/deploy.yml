@@ -84,22 +84,13 @@ stages:
                     ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
                 - task: Bash@3
-                  displayName: Put Terraform output into json file in staging dir
-                  inputs:
-                    workingDirectory: infrastructure
-                    targetType: 'inline'
-                    script: |
-                      ls $(Build.ArtifactStagingDirectory)
-                      terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
-                      ls $(Build.ArtifactStagingDirectory)
-
-                - task: Bash@3
                   name: set_var_step
-                  displayName: Put Terraform output into json file in staging dir
+                  displayName: Extract IP from Terraform output and set variable
                   inputs:
                     workingDirectory: infrastructure
                     targetType: 'inline'
                     script: |
+                      terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
                       echo "##vso[task.setvariable variable=target_ip;isOutput=true]$(python3 scripts/json_extract.py $(System.DefaultWorkingDirectory)/output.json)"
 
       - job: provision
@@ -119,6 +110,6 @@ stages:
                 ansible-playbook \
                 --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
                 --user ${{ parameters.env }}AdminUser \
-                --extra-vars target_server=$(target_ip)
+                --extra-vars target_server=$(target_ip) \
                 --inventory
                 playbook.yml
