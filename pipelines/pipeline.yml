@@ -20,13 +20,8 @@ parameters:
     type: boolean
     default: true
 
-  - name: infrastructure
-    displayName: Run infrastructure deployment?
-    type: boolean
-    default: true
-
-  - name: configuration
-    displayName: Run configuration provision?
+  - name: apply
+    displayName: Run infrastructure deployment and provision?
     type: boolean
     default: true
 
@@ -57,10 +52,10 @@ stages:
                 ARM_TENANT_ID: $(arm_tenant_id)
                 ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
-  - stage: deploy
-    displayName: Deploy to environment
-    jobs:
-      - ${{ if eq(parameters.infrastructure, true) }}:
+  - ${{ if eq(parameters.apply, true) }}:
+    - stage: deploy
+      displayName: Deploy to environment
+      jobs:
         - deployment: deploy
           displayName: Deploy to environment
           environment: ${{ parameters.env }}
@@ -113,7 +108,6 @@ stages:
                         terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
                         echo "##vso[task.setvariable variable=target_ip;isOutput=true]$(python3 scripts/json_extract.py $(System.DefaultWorkingDirectory)/output.json)"
 
-      - ${{ if eq(parameters.configuration, true) }}:
         - job: provision
           displayName: Provision the server
           dependsOn: deploy
