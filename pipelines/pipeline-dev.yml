@@ -16,7 +16,24 @@ variables:
   - name: env
     value: dev
 
+parameters:
+  - name: plan
+    displayName: Run infrastructure plan?
+    type: boolean
+    default: true
+  - name: infrastructure
+    displayName: Run infrastructure deployment?
+    type: boolean
+    default: true
+  - name: configuration
+    displayName: Run configuration provision?
+    type: boolean
+    default: true
+
 stages:
   - template: templates/deploy.yml
     parameters:
       env: $(env)
+      plan: ${{ plan }}
+      infrastructure: ${{ infrastructure }}
+      configuration: ${{ configuration }}

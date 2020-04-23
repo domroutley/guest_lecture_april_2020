@@ -1,115 +1,123 @@
 parameters:
 - name: env
   type: string
-  default: test
+- name: plan
+  type: boolean
+- name: infrastructure
+  type: boolean
+- name: configuration
+  type: boolean
 
 stages:
-  - stage: plan
-    displayName: Plan environment
-    jobs:
-      - job: plan
-        displayName: Plan infrastructure
-        steps:
+  - ${{ if eq(parameters.plan, true) }}:
+    - stage: plan
+      displayName: Plan environment
+      jobs:
+        - job: plan
+          displayName: Plan infrastructure
+          steps:
 
-          - template: init.yml
-            parameters:
-              env: ${{ parameters.env }}
+            - template: init.yml
+              parameters:
+                env: ${{ parameters.env }}
 
-          - task: Bash@3
-            displayName: Create dummy ssh key file
-            inputs:
-              workingDirectory: infrastructure
-              targetType: 'inline'
-              script: |
-                rm -rf keys
-                mkdir keys
-                touch keys/key.pub
-                ls keys
+            - task: Bash@3
+              displayName: Create dummy ssh key file
+              inputs:
+                workingDirectory: infrastructure
+                targetType: 'inline'
+                script: |
+                  rm -rf keys
+                  mkdir keys
+                  touch keys/key.pub
+                  ls keys
 
-          - task: Bash@3
-            displayName: Plan Terraform
-            inputs:
-              workingDirectory: infrastructure
-              targetType: 'inline'
-              script: terraform plan -var-file=${{ parameters.env }}/env.tfvars
-            env:
-              ARM_CLIENT_ID: $(arm_client_id)
-              ARM_CLIENT_SECRET: $(arm_client_secret)
-              ARM_TENANT_ID: $(arm_tenant_id)
-              ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+            - task: Bash@3
+              displayName: Plan Terraform
+              inputs:
+                workingDirectory: infrastructure
+                targetType: 'inline'
+                script: terraform plan -var-file=${{ parameters.env }}/env.tfvars
+              env:
+                ARM_CLIENT_ID: $(arm_client_id)
+                ARM_CLIENT_SECRET: $(arm_client_secret)
+                ARM_TENANT_ID: $(arm_tenant_id)
+                ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
   - stage: deploy
     displayName: Deploy to environment
     jobs:
-      - deployment: deploy
-        displayName: Deploy to environment
-        environment: ${{ parameters.env }}
-        strategy:
-          runOnce:
-            deploy:
-              steps:
+      - ${{ if eq(parameters.infrastructure, true) }}:
+        - deployment: deploy
+          displayName: Deploy to environment
+          environment: ${{ parameters.env }}
+          strategy:
+            runOnce:
+              deploy:
+                steps:
 
-                - checkout: self
-                  clean: true
+                  - checkout: self
+                    clean: true
 
-                - template: init.yml
-                  parameters:
-                    env: ${{ parameters.env }}
+                  - template: init.yml
+                    parameters:
+                      env: ${{ parameters.env }}
 
-                - task: Bash@3
-                  displayName: Create ssh key file
-                  inputs:
-                    workingDirectory: infrastructure
-                    targetType: 'inline'
-                    script: |
-                      rm -rf keys
-                      mkdir keys
-                      ssh-keygen -t rsa -b 4098 -P "" -f keys/key
-                      ls keys
+                  - task: Bash@3
+                    displayName: Create ssh key file
+                    inputs:
+                      workingDirectory: infrastructure
+                      targetType: 'inline'
+                      script: |
+                        rm -rf keys
+                        mkdir keys
+                        ssh-keygen -t rsa -b 4098 -P "" -f keys/key
+                        ls keys
 
-                - task: Bash@3
-                  displayName: Apply Terraform
-                  inputs:
-                    workingDirectory: infrastructure
-                    targetType: 'inline'
-                    script: |
-                      terraform apply \
-                      -var-file=${{ parameters.env }}/env.tfvars \
-                      -var="os_user=${{ parameters.env }}AdminUser" \
-                      -auto-approve
-                  env:
-                    ARM_CLIENT_ID: $(arm_client_id)
-                    ARM_CLIENT_SECRET: $(arm_client_secret)
-                    ARM_TENANT_ID: $(arm_tenant_id)
-                    ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+                  - task: Bash@3
+                    displayName: Apply Terraform
+                    inputs:
+                      workingDirectory: infrastructure
+                      targetType: 'inline'
+                      script: |
+                        terraform apply \
+                        -var-file=${{ parameters.env }}/env.tfvars \
+                        -var="os_user=${{ parameters.env }}AdminUser" \
+                        -auto-approve
+                    env:
+                      ARM_CLIENT_ID: $(arm_client_id)
+                      ARM_CLIENT_SECRET: $(arm_client_secret)
+                      ARM_TENANT_ID: $(arm_tenant_id)
+                      ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
-                - task: Bash@3
-                  name: set_var_step
-                  displayName: Extract IP from Terraform output and set variable
-                  inputs:
-                    workingDirectory: infrastructure
-                    targetType: 'inline'
-                    script: |
-                      terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
-                      echo "##vso[task.setvariable variable=target_ip;isOutput=true]$(python3 scripts/json_extract.py $(System.DefaultWorkingDirectory)/output.json)"
+                  - task: Bash@3
+                    name: set_var_step
+                    displayName: Extract IP from Terraform output and set variable
+                    inputs:
+                      workingDirectory: infrastructure
+                      targetType: 'inline'
+                      script: |
+                        terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
+                        echo "##vso[task.setvariable variable=target_ip;isOutput=true]$(python3 scripts/json_extract.py $(System.DefaultWorkingDirectory)/output.json)"
 
-      - job: provision
-        displayName: Provision the server
-        dependsOn: deploy
-        variables:
-          target_ip: $[ dependencies.deploy.outputs['deploy.set_var_step.target_ip'] ]
-        steps:
+      - ${{ if eq(parameters.configuration, true) }}:
+        - job: provision
+          displayName: Provision the server
+          dependsOn: deploy
+          variables:
+            target_ip: $[ dependencies.deploy.outputs['deploy.set_var_step.target_ip'] ]
+          steps:
 
-          - task: Bash@3
-            displayName: Provision server
-            inputs:
-              workingDirectory: configuration
-              targetType: 'inline'
-              script: |
-                ansible-playbook --version
-                ansible-playbook \
-                --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
-                --user ${{ parameters.env }}AdminUser \
-                --extra-vars target_server=$(target_ip) \
-                --inventory
-                playbook.yml
+            - task: Bash@3
+              displayName: Provision server
+              inputs:
+                workingDirectory: configuration
+                targetType: 'inline'
+                script: |
+                  ansible-playbook --version
+                  ansible-playbook \
+                  --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
+                  --user ${{ parameters.env }}AdminUser \
+                  --extra-vars target_server=$(target_ip) \
+                  --inventory
+                  playbook.yml
