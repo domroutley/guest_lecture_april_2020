@@ -24,7 +24,7 @@ steps:
 
   - template: templates/init.yml
     parameters:
-      stage: $(env)
+      env: $(env)
 
   - task: Bash@3
     inputs:
