@@ -116,7 +116,8 @@ stages:
                         ansible-playbook \
                         --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
                         --user $(username) \
-                        --extra-vars target_server=$(python3 scripts/json_extract.py output.json) env=${{ parameters.env }}\
+                        --extra-vars target_server=$(python3 scripts/json_extract.py output.json) /
+                        --extra-vars env=${{ parameters.env }}\
                         --inventory inventory.ini \
                         playbook.yml -v
                     env:
