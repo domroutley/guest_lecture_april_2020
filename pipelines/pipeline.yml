@@ -81,7 +81,6 @@ stages:
                         mkdir keys
                         ssh-keygen -t rsa -b 4098 -P "" -f keys/key
                         ls keys
-                        pwd
 
                   - task: Bash@3
                     displayName: Apply Terraform
@@ -104,7 +103,7 @@ stages:
                     inputs:
                       workingDirectory: infrastructure
                       targetType: 'inline'
-                      script: terraform output -json >> output.json
+                      script: terraform output -json >> $(System.DefaultWorkingDirectory)/configuration/output.json
                     env:
                       ARM_CLIENT_ID: $(arm_client_id)
                       ARM_CLIENT_SECRET: $(arm_client_secret)
@@ -112,32 +111,17 @@ stages:
                       ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
                   - task: Bash@3
-                    name: set_var_step
-                    displayName: Set IP variable
+                    displayName: Provision server
                     inputs:
-                      workingDirectory: pipelines
+                      workingDirectory: configuration
                       targetType: 'inline'
-                      script: echo "##vso[task.setvariable variable=target_ip;isOutput=true]$(python3 scripts/json_extract.py $(System.DefaultWorkingDirectory)/infrastructure/output.json)"
-
-        - job: provision
-          displayName: Provision the server
-          dependsOn: deploy
-          variables:
-            target_ip: $[ dependencies.deploy.outputs['deploy.set_var_step.target_ip'] ]
-          steps:
-
-            - task: Bash@3
-              displayName: Provision server
-              inputs:
-                workingDirectory: configuration
-                targetType: 'inline'
-                script: |
-                  ansible-playbook --version
-                  ansible-playbook \
-                  --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
-                  --user ${{ parameters.env }}AdminUser \
-                  --extra-vars target_server=$(target_ip) \
-                  --inventory inventory.ini \
-                  playbook.yml
-              env:
-                ANSIBLE_HOST_KEY_CHECKING: false
+                      script: |
+                        ansible-playbook --version
+                        ansible-playbook \
+                        --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
+                        --user ${{ parameters.env }}AdminUser \
+                        --extra-vars target_server=$(python3 scripts/json_extract.py output.json) \
+                        --inventory inventory.ini \
+                        playbook.yml
+                    env:
+                      ANSIBLE_HOST_KEY_CHECKING: false
