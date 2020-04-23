@@ -1,9 +1,11 @@
-# Defined by env vars
+# Defined by env specific vars
 variable "prefix" {
 }
 
+# Defined by env
+variable "os_password" {
+}
 variable "os_user" {
-  default = "demoUser"
 }
 
 variable "location" {

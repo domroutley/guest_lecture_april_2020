@@ -38,19 +38,21 @@ stages:
               parameters:
                 env: ${{ parameters.env }}
 
-            - template: templates/ssh-keygen.yml
-
             - task: Bash@3
               displayName: Plan Terraform
               inputs:
                 workingDirectory: infrastructure
                 targetType: 'inline'
-                script: terraform plan -var-file=${{ parameters.env }}/env.tfvars
+                script: |
+                  terraform plan \
+                  -var-file=${{ parameters.env }}/env.tfvars \
               env:
                 ARM_CLIENT_ID: $(arm_client_id)
                 ARM_CLIENT_SECRET: $(arm_client_secret)
                 ARM_TENANT_ID: $(arm_tenant_id)
                 ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+                TF_VAR_OS_USER: $(username)
+                TF_VAR_OS_PASSWORD: $(password)
 
   - ${{ if eq(parameters.apply, true) }}:
     - stage: deploy
@@ -74,10 +76,6 @@ stages:
                     parameters:
                       env: ${{ parameters.env }}
 
-                  - template: templates/ssh-keygen.yml
-                    parameters:
-                      comment: $(username)
-
                   - task: Bash@3
                     displayName: Apply Terraform
                     inputs:
@@ -86,13 +84,14 @@ stages:
                       script: |
                         terraform apply \
                         -var-file=${{ parameters.env }}/env.tfvars \
-                        -var="os_user=$(username)" \
                         -auto-approve
                     env:
                       ARM_CLIENT_ID: $(arm_client_id)
                       ARM_CLIENT_SECRET: $(arm_client_secret)
                       ARM_TENANT_ID: $(arm_tenant_id)
                       ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+                      TF_VAR_OS_USER: $(username)
+                      TF_VAR_OS_PASSWORD: $(password)
 
                   - task: Bash@3
                     displayName: Extract IP from Terraform output
@@ -114,11 +113,11 @@ stages:
                       script: |
                         ansible-playbook --version
                         ansible-playbook \
-                        --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
-                        --user $(username) \
                         --extra-vars target_server=$(python3 scripts/json_extract.py output.json) \
                         --extra-vars env=${{ parameters.env }} \
                         --inventory inventory.ini \
                         playbook.yml -v
                     env:
                       ANSIBLE_HOST_KEY_CHECKING: false
+                      ANSIBLE_USER: $(username)
+                      ANSIBLE_PASSWORD: $(password)
