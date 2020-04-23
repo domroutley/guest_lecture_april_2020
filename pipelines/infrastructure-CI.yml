@@ -20,8 +20,6 @@ strategy:
       env: prod
 
 steps:
-  - template: templates/dummy_ssh.yml
-
   - template: templates/init.yml
     parameters:
       env: $(env)
