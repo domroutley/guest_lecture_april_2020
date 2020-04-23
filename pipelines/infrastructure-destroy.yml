@@ -5,7 +5,7 @@ pool:
 
 parameters:
 - name: env
-  displayName:
+  displayName: Targeted environment
   type: string
   values:
   - test
