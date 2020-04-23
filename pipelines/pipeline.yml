@@ -125,6 +125,6 @@ stages:
                         --user $(username) \
                         --extra-vars target_server=$(python3 scripts/json_extract.py output.json) \
                         --inventory inventory.ini \
-                        playbook.yml
+                        playbook.yml -vvvv
                     env:
                       ANSIBLE_HOST_KEY_CHECKING: false
