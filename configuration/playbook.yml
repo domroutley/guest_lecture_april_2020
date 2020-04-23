@@ -17,12 +17,17 @@
         name: "*"
         state: latest
 
-    - name: Install Node.js
-      apt:
-        name: nodejs
-        state: latest
+  - name: Install nginx
+    apt:
+      name: nginx
+      state: present
 
-    - name: Install Express web framework
-      npm:
-        name: express
-        state: latest
+  - name: Insert Index Page
+    template:
+      src: content/index.html.j2
+      dest: /usr/share/nginx/html/index.html
+
+  - name: Start nginx
+    service:
+      name: nginx
+      state: started
