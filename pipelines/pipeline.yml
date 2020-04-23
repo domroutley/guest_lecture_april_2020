@@ -132,4 +132,5 @@ stages:
                   --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
                   --user ${{ parameters.env }}AdminUser \
                   --extra-vars target_server=$(target_ip) \
+                  --inventory inventory.ini \
                   playbook.yml
