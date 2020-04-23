@@ -1,0 +1,29 @@
+---
+- name: Dynamically load server IP into internal hosts from input var
+  hosts: localhost
+  tasks:
+
+    - name: Add target IP to internal hosts
+      add_host:
+        name: "{{ target_server }}"
+        group: servers
+
+- name: Configuration as Code
+  hosts: servers
+  become: yes
+  remote_user: demoUser
+  tasks:
+    - name: Update system packages
+      apt:
+        name: "*"
+        state: latest
+
+    - name: Install Node.js
+      apt:
+        name: nodejs
+        state: latest
+
+    - name: Install Express web framework
+      npm:
+        name: express
+        state: latest

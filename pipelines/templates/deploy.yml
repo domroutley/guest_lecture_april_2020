@@ -27,11 +27,11 @@ stages:
                 ls keys
 
           - task: Bash@3
+            displayName: Plan Terraform
             inputs:
               workingDirectory: infrastructure
               targetType: 'inline'
               script: terraform plan -var-file=${{ parameters.env }}/env.tfvars
-            displayName: Plan Terraform ${{ parameters.env }}
             env:
               ARM_CLIENT_ID: $(arm_client_id)
               ARM_CLIENT_SECRET: $(arm_client_secret)
@@ -68,13 +68,57 @@ stages:
                       ls keys
 
                 - task: Bash@3
+                  displayName: Apply Terraform
                   inputs:
                     workingDirectory: infrastructure
                     targetType: 'inline'
-                    script: terraform apply -var-file=${{ parameters.env }}/env.tfvars -auto-approve
-                  displayName: Apply Terraform ${{ parameters.env }}
+                    script: |
+                      terraform apply \
+                      -var-file=${{ parameters.env }}/env.tfvars \
+                      -var="os_user=${{ parameters.env }}AdminUser" \
+                      -auto-approve
                   env:
                     ARM_CLIENT_ID: $(arm_client_id)
                     ARM_CLIENT_SECRET: $(arm_client_secret)
                     ARM_TENANT_ID: $(arm_tenant_id)
                     ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+
+                - task: Bash@3
+                  displayName: Put Terraform output into json file in staging dir
+                  inputs:
+                    workingDirectory: infrastructure
+                    targetType: 'inline'
+                    script: |
+                      ls $(Build.ArtifactStagingDirectory)
+                      terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
+                      ls $(Build.ArtifactStagingDirectory)
+
+                - task: Bash@3
+                  name: set_var_step
+                  displayName: Put Terraform output into json file in staging dir
+                  inputs:
+                    workingDirectory: infrastructure
+                    targetType: 'inline'
+                    script: |
+                      echo "##vso[task.setvariable variable=target_ip;isOutput=true]$(python3 scripts/json_extract.py $(System.DefaultWorkingDirectory)/output.json)"
+
+      - job: provision
+        displayName: Provision the server
+        dependsOn: deploy
+        variables:
+          target_ip: $[ dependencies.deploy.outputs['deploy.set_var_step.target_ip'] ]
+        steps:
+
+          - task: Bash@3
+            displayName: Provision server
+            inputs:
+              workingDirectory: configuration
+              targetType: 'inline'
+              script: |
+                ansible-playbook --version
+                ansible-playbook \
+                --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
+                --user ${{ parameters.env }}AdminUser \
+                --extra-vars target_server=$(target_ip)
+                --inventory
+                playbook.yml
