@@ -31,7 +31,7 @@ steps:
         touch keys/key.pub
         ls keys
 
-  - template: $(System.DefaultWorkingDirectory)/pipelines/templates/init.yml
+  - template: templates/init.yml
     parameters:
       stage: $(env)
 
