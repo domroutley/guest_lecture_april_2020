@@ -51,8 +51,8 @@ stages:
                 ARM_CLIENT_SECRET: $(arm_client_secret)
                 ARM_TENANT_ID: $(arm_tenant_id)
                 ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
-                TF_VAR_OS_USER: $(username)
-                TF_VAR_OS_PASSWORD: $(password)
+                TF_VAR_os_user: $(username)
+                TF_VAR_os_password: $(password)
 
   - ${{ if eq(parameters.apply, true) }}:
     - stage: deploy
@@ -90,8 +90,8 @@ stages:
                       ARM_CLIENT_SECRET: $(arm_client_secret)
                       ARM_TENANT_ID: $(arm_tenant_id)
                       ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
-                      TF_VAR_OS_USER: $(username)
-                      TF_VAR_OS_PASSWORD: $(password)
+                      TF_VAR_os_user: $(username)
+                      TF_VAR_os_password: $(password)
 
                   - task: Bash@3
                     displayName: Extract IP from Terraform output
