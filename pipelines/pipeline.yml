@@ -138,3 +138,5 @@ stages:
                   --extra-vars target_server=$(target_ip) \
                   --inventory inventory.ini \
                   playbook.yml
+              env:
+                ANSIBLE_HOST_KEY_CHECKING: false
