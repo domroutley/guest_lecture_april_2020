@@ -59,6 +59,9 @@ stages:
         - deployment: deploy
           displayName: Deploy to environment
           environment: ${{ parameters.env }}
+          variables:
+            - name: username
+              value: ${{ parameters.env }}AdminUser
           strategy:
             runOnce:
               deploy:
@@ -79,7 +82,7 @@ stages:
                       script: |
                         rm -rf keys
                         mkdir keys
-                        ssh-keygen -t rsa -b 4098 -P "" -f keys/key
+                        ssh-keygen -t rsa -b 4098 -P "" -f keys/key -C $(username)
                         ls keys
 
                   - task: Bash@3
@@ -90,7 +93,7 @@ stages:
                       script: |
                         terraform apply \
                         -var-file=${{ parameters.env }}/env.tfvars \
-                        -var="os_user=${{ parameters.env }}AdminUser" \
+                        -var="os_user=$(username)" \
                         -auto-approve
                     env:
                       ARM_CLIENT_ID: $(arm_client_id)
@@ -119,7 +122,7 @@ stages:
                         ansible-playbook --version
                         ansible-playbook \
                         --private-key $(System.DefaultWorkingDirectory)/infrastructure/keys/key \
-                        --user ${{ parameters.env }}AdminUser \
+                        --user $(username) \
                         --extra-vars target_server=$(python3 scripts/json_extract.py output.json) \
                         --inventory inventory.ini \
                         playbook.yml
