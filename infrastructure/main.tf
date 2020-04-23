@@ -4,13 +4,14 @@ resource "azurerm_resource_group" "demo_rg" {
 }
 
 resource "azurerm_linux_virtual_machine" "demo_vm" {
-  name                  = "${var.prefix}-virtual-machine"
-  resource_group_name   = azurerm_resource_group.demo_rg.name
-  location              = var.location
-  network_interface_ids = [azurerm_network_interface.demo_net_interface.id]
-  size                  = var.vm_size
-  admin_username        = var.os_user
-  admin_password        = var.os_password
+  name                            = "${var.prefix}-virtual-machine"
+  resource_group_name             = azurerm_resource_group.demo_rg.name
+  location                        = var.location
+  network_interface_ids           = [azurerm_network_interface.demo_net_interface.id]
+  size                            = var.vm_size
+  admin_username                  = var.os_user
+  admin_password                  = var.os_password
+  disable_password_authentication = false
 
   os_disk {
     caching              = "ReadWrite"
