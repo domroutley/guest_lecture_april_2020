@@ -12,10 +12,6 @@
   hosts: servers
   become: yes
   tasks:
-    - name: Update system packages
-      apt:
-        name: "*"
-        state: latest
 
     - name: Install nginx
       apt:
