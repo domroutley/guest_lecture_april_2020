@@ -10,8 +10,12 @@ resource "azurerm_linux_virtual_machine" "demo_vm" {
   network_interface_ids           = [azurerm_network_interface.demo_net_interface.id]
   size                            = var.vm_size
   admin_username                  = var.os_user
-  admin_password                  = var.os_password
   disable_password_authentication = false
+
+  admin_ssh_key {
+    username   = var.os_user
+    public_key = file("../gl_key.pub")
+  }
 
   os_disk {
     caching              = "ReadWrite"

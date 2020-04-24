@@ -43,4 +43,3 @@ jobs:
                 ARM_TENANT_ID: $(arm_tenant_id)
                 ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
                 TF_VAR_os_user: fake_username
-                TF_VAR_os_password: fake_password

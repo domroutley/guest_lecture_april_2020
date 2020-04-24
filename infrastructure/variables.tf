@@ -3,8 +3,6 @@ variable "prefix" {
 }
 
 # Defined by env
-variable "os_password" {
-}
 variable "os_user" {
 }
 

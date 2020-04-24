@@ -52,7 +52,6 @@ stages:
                 ARM_TENANT_ID: $(arm_tenant_id)
                 ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
                 TF_VAR_os_user: fake_username
-                TF_VAR_os_password: fake_password
 
   - ${{ if eq(parameters.apply, true) }}:
     - stage: deploy
@@ -91,33 +90,37 @@ stages:
                       ARM_TENANT_ID: $(arm_tenant_id)
                       ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
                       TF_VAR_os_user: $(username)
-                      TF_VAR_os_password: $(password)
 
                   - task: Bash@3
                     displayName: Terraform output into JSON file
                     inputs:
                       workingDirectory: infrastructure
                       targetType: 'inline'
-                      script: terraform output -json >> $(System.DefaultWorkingDirectory)/configuration/output.json
+                      script: terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
                     env:
                       ARM_CLIENT_ID: $(arm_client_id)
                       ARM_CLIENT_SECRET: $(arm_client_secret)
                       ARM_TENANT_ID: $(arm_tenant_id)
                       ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
+                  - task: DownloadSecureFile@1
+                    name: ssh_key
+                    displayName: Download ssh private key
+                    inputs:
+                      secureFile: gl_key
+
                   - task: Bash@3
                     displayName: Provision server | environment: ${{ parameters.env }}
                     inputs:
-                      workingDirectory: configuration
                       targetType: 'inline'
                       script: |
                         ansible-playbook --version
                         ansible-playbook \
+                        --private-key $(ssh_key.secureFilePath) \
+                        --user $(username) \
                         --extra-vars target_server=$(python3 scripts/json_extract.py output.json) \
                         --extra-vars env=${{ parameters.env }} \
-                        --inventory inventory.ini \
-                        playbook.yml -v
+                        --inventory configuration/inventory.ini \
+                        configuration/playbook.yml -v
                     env:
                       ANSIBLE_HOST_KEY_CHECKING: false
-                      ANSIBLE_USER: $(username)
-                      ANSIBLE_PASSWORD: $(password)
