@@ -39,7 +39,7 @@ stages:
                 env: ${{ parameters.env }}
 
             - task: Bash@3
-              displayName: Plan Terraform | environment: ${{ parameters.env }}
+              displayName: Plan Terraform
               inputs:
                 workingDirectory: infrastructure
                 targetType: 'inline'
@@ -76,7 +76,7 @@ stages:
                       env: ${{ parameters.env }}
 
                   - task: Bash@3
-                    displayName: Apply Terraform | environment: ${{ parameters.env }}
+                    displayName: Apply Terraform
                     inputs:
                       workingDirectory: infrastructure
                       targetType: 'inline'
@@ -110,7 +110,7 @@ stages:
                       secureFile: gl_key
 
                   - task: Bash@3
-                    displayName: Provision server | environment: ${{ parameters.env }}
+                    displayName: Provision server
                     inputs:
                       targetType: 'inline'
                       script: |
