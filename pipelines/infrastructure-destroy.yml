@@ -36,7 +36,7 @@ jobs:
                 workingDirectory: infrastructure
                 targetType: 'inline'
                 script: terraform destroy -var-file=${{ parameters.env }}/env.tfvars -auto-approve
-              displayName: Destroy Terraform ${{ parameters.env }}
+              displayName: Destroy Terraform | environment: ${{ parameters.env }}
               env:
                 ARM_CLIENT_ID: $(arm_client_id)
                 ARM_CLIENT_SECRET: $(arm_client_secret)

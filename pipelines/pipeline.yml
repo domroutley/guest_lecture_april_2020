@@ -39,7 +39,7 @@ stages:
                 env: ${{ parameters.env }}
 
             - task: Bash@3
-              displayName: Plan Terraform
+              displayName: Plan Terraform | environment: ${{ parameters.env }}
               inputs:
                 workingDirectory: infrastructure
                 targetType: 'inline'
@@ -77,7 +77,7 @@ stages:
                       env: ${{ parameters.env }}
 
                   - task: Bash@3
-                    displayName: Apply Terraform
+                    displayName: Apply Terraform | environment: ${{ parameters.env }}
                     inputs:
                       workingDirectory: infrastructure
                       targetType: 'inline'
@@ -94,7 +94,7 @@ stages:
                       TF_VAR_os_password: $(password)
 
                   - task: Bash@3
-                    displayName: Extract IP from Terraform output
+                    displayName: Terraform output into JSON file
                     inputs:
                       workingDirectory: infrastructure
                       targetType: 'inline'
@@ -106,7 +106,7 @@ stages:
                       ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
                   - task: Bash@3
-                    displayName: Provision server
+                    displayName: Provision server | environment: ${{ parameters.env }}
                     inputs:
                       workingDirectory: configuration
                       targetType: 'inline'
