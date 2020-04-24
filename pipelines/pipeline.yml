@@ -110,6 +110,12 @@ stages:
                       secureFile: gl_key
 
                   - task: Bash@3
+                    displayName: Set ssh key access permissions
+                    inputs:
+                      targetType: 'inline'
+                      script: chmod 0400 $(ssh_key.secureFilePath)
+
+                  - task: Bash@3
                     displayName: Provision server
                     inputs:
                       targetType: 'inline'
