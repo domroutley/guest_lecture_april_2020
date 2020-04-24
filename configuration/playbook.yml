@@ -22,11 +22,6 @@
         name: nginx
         state: present
 
-    - name: Insert Index Page
-      template:
-        src: content/index.html.j2
-        dest: /usr/share/nginx/html/index.html
-
     - name: Start nginx
       service:
         name: nginx

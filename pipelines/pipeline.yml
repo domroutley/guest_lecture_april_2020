@@ -125,7 +125,6 @@ stages:
                         --private-key $(ssh_key.secureFilePath) \
                         --user $(username) \
                         --extra-vars target_server=$(python3 scripts/json_extract.py output.json) \
-                        --extra-vars env=${{ parameters.env }} \
                         --inventory configuration/inventory.ini \
                         configuration/playbook.yml -v
                     env:
