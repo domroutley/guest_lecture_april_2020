@@ -28,126 +28,126 @@ parameters:
     default: true
 
 stages:
-    - stage: plan
-      displayName: Plan environment
-      condition: eq('${{ parameters.plan }}', true)
-      jobs:
-        - job: plan
-          displayName: Plan infrastructure
-          steps:
+  - stage: plan
+    displayName: Plan environment
+    condition: eq('${{ parameters.plan }}', true)
+    jobs:
+      - job: plan
+        displayName: Plan infrastructure
+        steps:
 
-            - template: templates/init.yml
-              parameters:
-                env: ${{ parameters.env }}
+          - template: templates/init.yml
+            parameters:
+              env: ${{ parameters.env }}
 
-            - task: Bash@3
-              displayName: Plan Terraform from commit $(Build.SourceVersion)
-              inputs:
-                workingDirectory: infrastructure
-                targetType: 'inline'
-                script: |
-                  terraform plan \
-                  -var-file=${{ parameters.env }}/env.tfvars \
-                  -out $(Build.StagingDirectory)/${{ parameters.env }}.plan
-              env:
-                ARM_CLIENT_ID: $(arm_client_id)
-                ARM_CLIENT_SECRET: $(arm_client_secret)
-                ARM_TENANT_ID: $(arm_tenant_id)
-                ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
-                TF_VAR_os_user: $(username)
+          - task: Bash@3
+            displayName: Plan Terraform from commit $(Build.SourceVersion)
+            inputs:
+              workingDirectory: infrastructure
+              targetType: 'inline'
+              script: |
+                terraform plan \
+                -var-file=${{ parameters.env }}/env.tfvars \
+                -out $(Build.StagingDirectory)/${{ parameters.env }}.plan
+            env:
+              ARM_CLIENT_ID: $(arm_client_id)
+              ARM_CLIENT_SECRET: $(arm_client_secret)
+              ARM_TENANT_ID: $(arm_tenant_id)
+              ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+              TF_VAR_os_user: $(username)
 
-            - task: PublishPipelineArtifact@1
-              condition: eq('${{ parameters.apply }}', true)
-              displayName: Publish output of plan
-              inputs:
-                targetPath: $(Build.StagingDirectory)/${{ parameters.env }}.plan
-                publishLocation: 'pipeline'
+          - task: PublishPipelineArtifact@1
+            condition: eq('${{ parameters.apply }}', true)
+            displayName: Publish output of plan
+            inputs:
+              targetPath: $(Build.StagingDirectory)/${{ parameters.env }}.plan
+              publishLocation: 'pipeline'
 
-    - stage: deploy
-      displayName: Deploy to environment
-      condition: eq('${{ parameters.apply }}', true)
-      jobs:
-        - deployment: deploy
-          displayName: Deploy to environment
-          environment: ${{ parameters.env }}
-          strategy:
-            runOnce:
-              deploy:
-                steps:
+  - stage: deploy
+    displayName: Deploy to environment
+    condition: eq('${{ parameters.apply }}', true)
+    jobs:
+      - deployment: deploy
+        displayName: Deploy to environment
+        environment: ${{ parameters.env }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
 
-                  - checkout: self
-                    clean: true
+                - checkout: self
+                  clean: true
 
-                  - template: templates/init.yml
-                    parameters:
-                      env: ${{ parameters.env }}
+                - template: templates/init.yml
+                  parameters:
+                    env: ${{ parameters.env }}
 
-                  - task: Bash@3
-                    displayName: Apply Terraform from plan
-                    condition: eq('${{ parameters.plan }}', true)
-                    inputs:
-                      workingDirectory: infrastructure
-                      targetType: 'inline'
-                      # Auto-download path = $(Pipeline.Workspace)/stage.job/
-                      script: terraform apply $(Pipeline.Workspace)/plan.plan/${{ parameters.env }}.plan
-                    env:
-                      ARM_CLIENT_ID: $(arm_client_id)
-                      ARM_CLIENT_SECRET: $(arm_client_secret)
-                      ARM_TENANT_ID: $(arm_tenant_id)
-                      ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+                - task: Bash@3
+                  displayName: Apply Terraform from plan
+                  condition: eq('${{ parameters.plan }}', true)
+                  inputs:
+                    workingDirectory: infrastructure
+                    targetType: 'inline'
+                    # Auto-download path = $(Pipeline.Workspace)/stage.job/
+                    script: terraform apply $(Pipeline.Workspace)/plan.plan/${{ parameters.env }}.plan
+                  env:
+                    ARM_CLIENT_ID: $(arm_client_id)
+                    ARM_CLIENT_SECRET: $(arm_client_secret)
+                    ARM_TENANT_ID: $(arm_tenant_id)
+                    ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
-                  - task: Bash@3
-                    displayName: Apply Terraform from commit $(Build.SourceVersion)
-                    condition: eq('${{ parameters.plan }}', false)
-                    inputs:
-                      workingDirectory: infrastructure
-                      targetType: 'inline'
-                      script: |
-                        terraform apply \
-                        -var-file=${{ parameters.env }}/env.tfvars \
-                        -auto-approve
-                    env:
-                      ARM_CLIENT_ID: $(arm_client_id)
-                      ARM_CLIENT_SECRET: $(arm_client_secret)
-                      ARM_TENANT_ID: $(arm_tenant_id)
-                      ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
-                      TF_VAR_os_user: $(username)
+                - task: Bash@3
+                  displayName: Apply Terraform from commit $(Build.SourceVersion)
+                  condition: eq('${{ parameters.plan }}', false)
+                  inputs:
+                    workingDirectory: infrastructure
+                    targetType: 'inline'
+                    script: |
+                      terraform apply \
+                      -var-file=${{ parameters.env }}/env.tfvars \
+                      -auto-approve
+                  env:
+                    ARM_CLIENT_ID: $(arm_client_id)
+                    ARM_CLIENT_SECRET: $(arm_client_secret)
+                    ARM_TENANT_ID: $(arm_tenant_id)
+                    ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+                    TF_VAR_os_user: $(username)
 
-                  - task: Bash@3
-                    displayName: Terraform output into JSON file
-                    inputs:
-                      workingDirectory: infrastructure
-                      targetType: 'inline'
-                      script: terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
-                    env:
-                      ARM_CLIENT_ID: $(arm_client_id)
-                      ARM_CLIENT_SECRET: $(arm_client_secret)
-                      ARM_TENANT_ID: $(arm_tenant_id)
-                      ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
+                - task: Bash@3
+                  displayName: Terraform output into JSON file
+                  inputs:
+                    workingDirectory: infrastructure
+                    targetType: 'inline'
+                    script: terraform output -json >> $(System.DefaultWorkingDirectory)/output.json
+                  env:
+                    ARM_CLIENT_ID: $(arm_client_id)
+                    ARM_CLIENT_SECRET: $(arm_client_secret)
+                    ARM_TENANT_ID: $(arm_tenant_id)
+                    ARM_SUBSCRIPTION_ID: $(arm_subscription_id)
 
-                  - task: DownloadSecureFile@1
-                    # While defined here, is run as a pre-job step
-                    name: ssh_key
-                    displayName: Download ssh private key
-                    inputs:
-                      secureFile: gl_key
+                - task: DownloadSecureFile@1
+                  # While defined here, is run as a pre-job step
+                  name: ssh_key
+                  displayName: Download ssh private key
+                  inputs:
+                    secureFile: gl_key
 
-                  - task: Bash@3
-                    displayName: Set ssh key access permissions
-                    inputs:
-                      targetType: 'inline'
-                      script: chmod 0400 $(ssh_key.secureFilePath)
+                - task: Bash@3
+                  displayName: Set ssh key access permissions
+                  inputs:
+                    targetType: 'inline'
+                    script: chmod 0400 $(ssh_key.secureFilePath)
 
-                  - task: Bash@3
-                    displayName: Provision server
-                    inputs:
-                      targetType: 'inline'
-                      script: |
-                        ansible-playbook --version
-                        ansible-playbook \
-                        --private-key $(ssh_key.secureFilePath) \
-                        --user $(username) \
-                        --extra-vars target_server=$(python3 scripts/json_extract.py output.json) \
-                        configuration/playbook.yml
-                    env:
-                      ANSIBLE_HOST_KEY_CHECKING: false
+                - task: Bash@3
+                  displayName: Provision server
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      ansible-playbook --version
+                      ansible-playbook \
+                      --private-key $(ssh_key.secureFilePath) \
+                      --user $(username) \
+                      --extra-vars target_server=$(python3 scripts/json_extract.py output.json) \
+                      configuration/playbook.yml
+                  env:
+                    ANSIBLE_HOST_KEY_CHECKING: false
